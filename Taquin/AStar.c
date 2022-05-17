@@ -11,6 +11,15 @@
 // fonction pour créer (allouer) un noeud de liste et l'initialiser avec le taquin passé en paramètre
 ptrListAStar createNodeList(Taquin * pTaquin, int gValue, int fValue, deplacement d, ptrListAStar pPrevPlay)
 {
+	ptrListAStar list = (ptrListAStar) calloc(1, sizeof(ListAStar));
+	if (!list)
+		return NULL;
+
+	list->m_parcouru = gValue;
+	list->m_distanceLeft = fValue;
+	list->m_lastMove = d;
+	list->m_taquin = pTaquin;
+	list->m_lastStep = pPrevPlay;
 	return NULL;
 }
 
@@ -18,6 +27,20 @@ ptrListAStar createNodeList(Taquin * pTaquin, int gValue, int fValue, deplacemen
 // si on passe le paramètre tri à 0, on insère en tête de liste
 int insertList(ptrListAStar * ppHead, ptrListAStar pNode, int tri)
 {
+	if (!ppHead || !(*ppHead) || !pNode)
+		return -1;
+
+	if (!tri)
+	{
+		pNode->m_nextlist = (*ppHead);
+		(*ppHead) = pNode;
+		return 1;
+	}
+
+	ptrListAStar temp = ppHead;
+	while (temp->m_nextlist)
+		temp = temp->m_nextlist;
+	temp->m_nextlist = pNode;
 	return 1;
 }
 
@@ -25,19 +48,30 @@ int insertList(ptrListAStar * ppHead, ptrListAStar pNode, int tri)
 // Retourne le noeud prélevé
 ptrListAStar popList(ptrListAStar * ppHead)
 {
-	return NULL;
+	ptrListAStar temp = (*ppHead);
+	(*ppHead) = temp->m_nextlist;
+	return temp;
 }
 
 // fonction qui retourne le noeud dans lequel on trouve le taquin passé en paramètre (pointeur sur le pointeur dans la liste)
 ptrListAStar * isInList(ptrListAStar * ppHead, Taquin * pTaquin)
 {
-	return NULL;
+	ptrListAStar temp = (*ppHead);
+	while (temp && temp->m_taquin != pTaquin)
+		temp = temp->m_nextlist;
+	return temp;
 }
 
 // fonction pour afficher une liste
 // si on met displayFGH à 0 les valeur de F, G et H ne sont pas affichées
 int displayList(ptrListAStar pHead, int displayFGH)
 {
+	ptrListAStar temp = pHead;
+	while (temp)
+	{
+		displayTaquin(temp->m_taquin, 3);
+		(displayFGH == 1) ? printf("F : %d; G : %d; H : %d;\n\n", pHead->m_distanceLeft + pHead->m_parcouru, pHead->m_distanceLeft, pHead->m_parcouru) : printf("\n\n");
+	}
 	return 1;
 }
 

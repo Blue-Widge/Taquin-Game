@@ -25,7 +25,8 @@ void usage()
 }
 
 int main(int argc, char ** argv)
-{	
+{
+
 	// Detection fuites memoire
 	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 	atexit(pause);
@@ -88,9 +89,9 @@ int main(int argc, char ** argv)
 
 
 				// En mode console
-				//gameLoop(hauteur,largeur, minRandom,maxRandom);
+				gameLoop(hauteur,largeur, minRandom,maxRandom);
 				// En mode graphique
-				gameLoopSDL(hauteur,largeur,taquinFile, minRandom, maxRandom);
+				//gameLoopSDL(hauteur,largeur,taquinFile, minRandom, maxRandom);
 
 			}
 

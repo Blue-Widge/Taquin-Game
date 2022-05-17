@@ -19,12 +19,12 @@
 // Structure de donnée pour réprésenter un noeud de liste en mémoire
 typedef struct sListAStar
 {
-	int g;						// Distance déjà parcourue entre l'état initial et l'état courant
-								// Evaluation de la distance à parcourir entre l'état initial et l'état final
-								// Taquin contenu dans le noeud courant
-								// dernier déplacement effectué pour arriver à ce taquin
-								// Pointeur vers le noeud correspondant à l'étape précédente dans la solution
-								// Pointeur vers le noeud suivant (liste simplement chaînée)
+	int m_parcouru;						// Distance déjà parcourue entre l'état initial et l'état courant
+	int m_distanceLeft;					// Evaluation de la distance à parcourir entre l'état initial et l'état final
+	Taquin* m_taquin;						// Taquin contenu dans le noeud courant
+	deplacement m_lastMove;					// dernier déplacement effectué pour arriver à ce taquin
+	struct ListAStar* m_lastStep;							// Pointeur vers le noeud correspondant à l'étape précédente dans la solution
+	struct ListAStar* m_nextlist;							// Pointeur vers le noeud suivant (liste simplement chaînée)
 }ListAStar;
 
 typedef ListAStar * ptrListAStar;		// Redéfinition pour faciliter l'écriture dans les en-têtes des fonctions
