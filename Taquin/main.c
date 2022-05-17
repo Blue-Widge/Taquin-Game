@@ -92,7 +92,6 @@ int main(int argc, char ** argv)
 				gameLoop(hauteur,largeur, minRandom,maxRandom);
 				// En mode graphique
 				//gameLoopSDL(hauteur,largeur,taquinFile, minRandom, maxRandom);
-
 			}
 
 			break;

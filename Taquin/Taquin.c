@@ -123,60 +123,14 @@ int mixTaquin(Taquin * pTaquin, int minRandom, int maxRandom)
 
 	int largeur = pTaquin->largeur;
 	int hauteur = pTaquin->hauteur;
-
 	deplacement possibleMove = AUCUN;
-
+	int x, y;
 	int nbCoups = rand() % (maxRandom - minRandom + 1) + minRandom;
 
 	while (nbCoups)
 	{
-		possibleMove = rand() % 5;
-		if (possibleMove == AUCUN)
-		{
-			nbCoups--;
-			continue;
-		}
-		if (possibleMove == GAUCHE)
-		{
-			if (pTaquin->x > 0)
-			{
-				moveTaquin(pTaquin, possibleMove);
-				nbCoups--;
-				continue;
-			}
-			possibleMove = (possibleMove + 1) % 5;
-			continue;
-		}
-		if (possibleMove == DROITE)
-		{
-			if (pTaquin->x < largeur - 1)
-			{
-				moveTaquin(pTaquin, possibleMove);
-				continue;
-			}
-			possibleMove = (possibleMove + 1) % 5;
-			continue;
-		}
-		if (possibleMove == HAUT)
-		{
-			if (pTaquin->y > 0)
-			{
-				moveTaquin(pTaquin, possibleMove);
-				continue;
-			}
-			possibleMove = (possibleMove + 1) % 5;
-			continue;
-		}
-		if (possibleMove == BAS)
-		{
-			if (pTaquin->y < hauteur - 1)
-			{
-				moveTaquin(pTaquin, possibleMove);
-				continue;
-			}
-			possibleMove = (possibleMove + 1) % 5;
-			continue;
-		}
+		moveTaquin(pTaquin, rand() % 5);
+		nbCoups--;
 	}
 
 	return 1;
@@ -194,36 +148,36 @@ int moveTaquin(Taquin * pTaquin, deplacement d)
 	int x = pTaquin->x;
 	int y = pTaquin->y;
 
-	if (d == GAUCHE)
+	if (d == GAUCHE && x > 0)
 	{
-		pTaquin->plateau[x][y] ^= pTaquin->plateau[x - 1][y];
-		pTaquin->plateau[x - 1][y] ^= pTaquin->plateau[x][y];
-		pTaquin->plateau[x][y] ^= pTaquin->plateau[x - 1][y];
+		pTaquin->plateau[y][x] ^= pTaquin->plateau[y][x - 1];
+		pTaquin->plateau[y][x - 1] ^= pTaquin->plateau[y][x];
+		pTaquin->plateau[y][x] ^= pTaquin->plateau[y][x - 1];
 		pTaquin->x = x - 1;
 		return 1;
 	}
-	if (d == HAUT)
+	if (d == HAUT && y > 0)
 	{
-		pTaquin->plateau[x][y] ^= pTaquin->plateau[x][y - 1];
-		pTaquin->plateau[x][y - 1] ^= pTaquin->plateau[x][y];
-		pTaquin->plateau[x][y] ^= pTaquin->plateau[x][y - 1];
+		pTaquin->plateau[y][x] ^= pTaquin->plateau[y - 1][x];
+		pTaquin->plateau[y - 1][x] ^= pTaquin->plateau[y][x];
+		pTaquin->plateau[y][x] ^= pTaquin->plateau[y - 1][x];
 		pTaquin->y = y - 1;
 		return 1;
 	}
-	if (d == DROITE)
+	if (d == DROITE && x < pTaquin->largeur - 1)
 	{
-		pTaquin->plateau[x][y] ^= pTaquin->plateau[x + 1][y];
-		pTaquin->plateau[x + 1][y] ^= pTaquin->plateau[x][y];
-		pTaquin->plateau[x][y] ^= pTaquin->plateau[x + 1][y];
+		pTaquin->plateau[y][x] ^= pTaquin->plateau[y][x + 1];
+		pTaquin->plateau[y][x + 1] ^= pTaquin->plateau[y][x];
+		pTaquin->plateau[y][x] ^= pTaquin->plateau[y][x + 1];
 		pTaquin->x = x + 1;
 		return 1;
 	}
-	if (d == BAS)
+	if (d == BAS && y < pTaquin->hauteur - 1)
 	{
-		pTaquin->plateau[x][y] ^= pTaquin->plateau[x][y + 1];
-		pTaquin->plateau[x][y + 1] ^= pTaquin->plateau[x][y];
-		pTaquin->plateau[x][y] ^= pTaquin->plateau[x][y + 1];
-		pTaquin->y = y - 1;
+		pTaquin->plateau[y][x] ^= pTaquin->plateau[y + 1][x];
+		pTaquin->plateau[y + 1][x] ^= pTaquin->plateau[y][x];
+		pTaquin->plateau[y][x] ^= pTaquin->plateau[y + 1][x];
+		pTaquin->y = y + 1;
 		return 1;
 	}
 
@@ -263,6 +217,8 @@ int displayTaquin(Taquin * pTaquin, int offset)
 	// TODO: displayTaquin
 	if (!pTaquin || !(pTaquin->plateau))
 		return -1;
+
+	system("cls");
 	int hauteur = pTaquin->hauteur;
 	int largeur = pTaquin->largeur;
 	unsigned char** plateau = pTaquin->plateau;
@@ -270,7 +226,7 @@ int displayTaquin(Taquin * pTaquin, int offset)
 	{
 		for (int j = 0; j < largeur; ++j)
 		{
-			printf("%hd ", plateau[i][j], offset);
+			//printf("%hd\t", plateau[i][j], offset);
 		}
 		printf("\n");
 	}
@@ -281,20 +237,18 @@ int displayTaquin(Taquin * pTaquin, int offset)
 int freeTaquin(Taquin * pTaquin)
 {
 	// TODO: freeTaquin
-	if (!pTaquin)
+	if (!pTaquin || !pTaquin->plateau)
 		return -1;
 	int hauteur = pTaquin->hauteur;
 	for (int i = 0; i < hauteur; ++i)
-	{
 		free(pTaquin->plateau[i]);
-		pTaquin->plateau = NULL;
-	}
-	free(pTaquin);
-	pTaquin = NULL;
+
+	free(pTaquin->plateau);
+	pTaquin->plateau = NULL;
 	return 1;
 }
 // Boucle de jeu 
-int gameLoop(int hauteur,int largeur,int minRandom, int maxRandom)
+int gameLoop(int hauteur, int largeur, int minRandom, int maxRandom)
 {
 	int end = 0;
 	Taquin t;
@@ -302,15 +256,52 @@ int gameLoop(int hauteur,int largeur,int minRandom, int maxRandom)
 	createTaquin(&t, hauteur, largeur);
 	t.x = t.y = 0;
 
+	initTaquin(&t);
 	srand((unsigned)time(NULL));
 	mixTaquin(&t, minRandom, maxRandom);
 
 	displayTaquin(&t, 3);
 	// BOUCLE DE JEU ! A DEVELOPPER
-	while(!_kbhit())
+
+	// On boucle tant que la solution n'a pas été trouvée*
+	// Gestion des évènements
+	deplacement d = AUCUN;
+	char key;
+	while (!end)
 	{
-		//printf(".");
+		key = _getch();
+
+		if (!_kbhit)
+			continue;
+		switch ((int)key)
+		{
+		case 27: end = 1;
+			break;
+		case 'Z':
+		case 'z':
+			d = HAUT;
+			break;
+		case 'S':
+		case 's':
+			d = BAS;
+			break;
+		case 'D':
+		case 'd':
+			d = DROITE;
+			break;
+		case 'Q': 
+		case 'q':
+			d = GAUCHE;
+			break;
+		}
+		key = 0;
+
+		moveTaquin(&t, d);
+		displayTaquin(&t, 3);
 	}
+
+
+	freeTaquin(&t);
 	return 1;
 }
 
