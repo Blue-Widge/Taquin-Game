@@ -13,8 +13,10 @@
 int copyTaquin(Taquin * pSrc, Taquin * pDest)
 {
 	// TODO: copyTaquin
+	pDest = NULL;
+	createTaquin(pDest, pSrc->hauteur, pSrc->largeur);
 
-	return 1;
+	return pDest ? 1 : 0;
 }
 
 // fonction qui renvoie 1 si les 2 taquins sont identiques
@@ -23,8 +25,17 @@ int copyTaquin(Taquin * pSrc, Taquin * pDest)
 int equalTaquin(Taquin * pTaquin1, Taquin * pTaquin2)
 {
 	// TODO: equalTaquin
+	if (!pTaquin1 || !pTaquin2)
+		return -1;
 
-	return 0;
+	if (pTaquin1->hauteur != pTaquin2->hauteur ||
+		pTaquin1->largeur != pTaquin2->largeur ||
+		pTaquin1->plateau != pTaquin2->plateau ||
+		pTaquin1->x != pTaquin2->x			   ||
+		pTaquin1->y != pTaquin2->y)
+	{	return 0;	}
+
+	return 1;
 }
 
 // Fonction qui crée un plateau de taquin 
@@ -89,7 +100,11 @@ int createTaquin(Taquin * pTaquin, unsigned char hauteur, unsigned char largeur)
 int initTaquin(Taquin * pTaquin)
 {
 	// TODO: initTaquin
-
+	int hauteur = pTaquin->hauteur;
+	int largeur = pTaquin->largeur;
+	for (int i = 0; i < hauteur; ++i)
+		for (int j = 0; j < largeur; ++j)
+			pTaquin->plateau[i][j] = i * largeur + j;
 	return 1;
 }
 
@@ -97,6 +112,66 @@ int initTaquin(Taquin * pTaquin)
 int mixTaquin(Taquin * pTaquin, int minRandom, int maxRandom)
 {
 	// TODO: mixTaquin
+
+	if (!pTaquin)
+		return -1;
+	int largeur = pTaquin->largeur;
+	int hauteur = pTaquin->hauteur;
+
+	deplacement possibleMove = AUCUN;
+
+	int nbCoups = rand() % (maxRandom - minRandom + 1) + minRandom;
+
+	while (nbCoups)
+	{
+		possibleMove = rand() % 5;
+		if (possibleMove == AUCUN)
+		{
+			nbCoups--;
+			continue;
+		}
+		if (possibleMove == GAUCHE)
+		{
+			if (pTaquin->x > 0)
+			{
+				moveTaquin(pTaquin, possibleMove);
+				nbCoups--;
+				continue;
+			}
+			possibleMove = (possibleMove + 1) % 5;
+			continue;
+		}
+		if (possibleMove == DROITE)
+		{
+			if (pTaquin->x < largeur - 1)
+			{
+				moveTaquin(pTaquin, possibleMove);
+				continue;
+			}
+			possibleMove = (possibleMove + 1) % 5;
+			continue;
+		}
+		if (possibleMove == HAUT)
+		{
+			if (pTaquin->y > 0)
+			{
+				moveTaquin(pTaquin, possibleMove);
+				continue;
+			}
+			possibleMove = (possibleMove + 1) % 5;
+			continue;
+		}
+		if (possibleMove == BAS)
+		{
+			if (pTaquin->y < hauteur - 1)
+			{
+				moveTaquin(pTaquin, possibleMove);
+				continue;
+			}
+			possibleMove = (possibleMove + 1) % 5;
+			continue;
+		}
+	}
 
 	return 1;
 }

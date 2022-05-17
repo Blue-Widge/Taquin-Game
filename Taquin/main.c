@@ -55,7 +55,7 @@ int main(int argc, char ** argv)
 				switch(argc)
 				{
 					case 2:
-						hauteur = largeur= atoi(argv[1]);
+						hauteur = largeur = atoi(argv[1]);
 						break;
 					case 3:
 					case 4:					

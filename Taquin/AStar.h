@@ -17,7 +17,8 @@
 #include "SDL.h"
 
 // Structure de donnée pour réprésenter un noeud de liste en mémoire
-typedef struct sListAStar {
+typedef struct sListAStar
+{
 	int g;						// Distance déjà parcourue entre l'état initial et l'état courant
 								// Evaluation de la distance à parcourir entre l'état initial et l'état final
 								// Taquin contenu dans le noeud courant
