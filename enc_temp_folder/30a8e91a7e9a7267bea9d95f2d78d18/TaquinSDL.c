@@ -125,6 +125,8 @@ int displayTaquinSDL(TaquinSDL * pTaquinSDL)
 		SDL_UpdateRect(pTaquinSDL->pWindow,0,0,0,0);
 
 	}
+
+
 	return 1;
 }
 
