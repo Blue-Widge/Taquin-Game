@@ -37,10 +37,12 @@ int insertList(ptrListAStar * ppHead, ptrListAStar pNode, int tri)
 		return 1;
 	}
 
-	ptrListAStar temp = ppHead;
-	while (temp->m_nextlist)
+	ptrListAStar temp = (*ppHead), temp2;
+	while (temp->m_nextlist && temp->m_nextlist->m_distanceLeft < pNode->m_distanceLeft)
 		temp = temp->m_nextlist;
+	temp2 = temp->m_nextlist;
 	temp->m_nextlist = pNode;
+	pNode->m_nextlist = temp2;
 	return 1;
 }
 
@@ -59,7 +61,7 @@ ptrListAStar * isInList(ptrListAStar * ppHead, Taquin * pTaquin)
 	ptrListAStar temp = (*ppHead);
 	while (temp && temp->m_taquin != pTaquin)
 		temp = temp->m_nextlist;
-	return temp;
+	return &temp;
 }
 
 // fonction pour afficher une liste
@@ -86,12 +88,23 @@ int displayList(ptrListAStar pHead, int displayFGH)
 // pWindow
 int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *pNbDeplacements, unsigned long * pNbTaquinsGeneres, unsigned long * pTimeElapsed, int stepByStep, SDL_Surface * pWindow)
 {
-
+	createNodeList(pTaquin, 0, h(pTaquin), AUCUN, NULL);
 	return 1;
 }
 
 // fonction d'évaluation pour la résolution avec AStar
 int h(Taquin * pTaquin)
 {
-	return 0;
+	int distance = 0;
+	int hauteur = pTaquin->hauteur;
+	int largeur = pTaquin->largeur;
+
+	for (int i = 0; i < hauteur; ++i)
+	{
+		for (int j = 0; j < largeur; ++j)
+		{
+			distance += abs((pTaquin->plateau[i][j] / largeur + pTaquin->plateau[i][j] % largeur) - i - j);
+		}
+	}
+	return distance;
 }

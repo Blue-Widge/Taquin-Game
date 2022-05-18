@@ -15,7 +15,6 @@ int copyTaquin(Taquin * pSrc, Taquin * pDest)
 	// TODO: copyTaquin*
 	if (!pDest)
 		return -1;
-
 	createTaquin(pDest, pSrc->hauteur, pSrc->largeur);
 
 	return pDest ? 1 : 0;
@@ -32,10 +31,16 @@ int equalTaquin(Taquin * pTaquin1, Taquin * pTaquin2)
 
 	if (pTaquin1->hauteur != pTaquin2->hauteur ||
 		pTaquin1->largeur != pTaquin2->largeur ||
-		pTaquin1->plateau != pTaquin2->plateau ||
 		pTaquin1->x != pTaquin2->x			   ||
 		pTaquin1->y != pTaquin2->y)
 	{	return 0;	}
+
+	int hauteur = pTaquin1->hauteur;
+	int largeur = pTaquin1->largeur;
+
+	for (int i = 0; i < hauteur; ++i)
+		for (int j = 0; j < largeur; ++j)
+			if (pTaquin1->plateau[i][j] != pTaquin2->plateau[i][j]) return 0;
 
 	return 1;
 }
@@ -144,7 +149,7 @@ int moveTaquin(Taquin * pTaquin, deplacement d)
 		return -1;
 
 	if (!d)
-		return 1;
+		return 0;
 	int x = pTaquin->x;
 	int y = pTaquin->y;
 
@@ -215,6 +220,7 @@ int endTaquin(Taquin * pTaquin)
 int displayTaquin(Taquin * pTaquin, int offset)
 {
 	// TODO: displayTaquin
+
 	if (!pTaquin || !(pTaquin->plateau))
 		return -1;
 
@@ -226,7 +232,7 @@ int displayTaquin(Taquin * pTaquin, int offset)
 	{
 		for (int j = 0; j < largeur; ++j)
 		{
-			//printf("%hd\t", plateau[i][j], offset);
+			printf("%hd\t", plateau[i][j], offset);
 		}
 		printf("\n");
 	}
@@ -251,16 +257,18 @@ int freeTaquin(Taquin * pTaquin)
 int gameLoop(int hauteur, int largeur, int minRandom, int maxRandom)
 {
 	int end = 0;
-	Taquin t;
-	t.plateau = NULL;
-	createTaquin(&t, hauteur, largeur);
-	t.x = t.y = 0;
+	Taquin taquin, result;
+	taquin.plateau = result.plateau = NULL;
+	createTaquin(&taquin, hauteur, largeur);
+	taquin.x = taquin.y = result.x = result.y = 0;
 
-	initTaquin(&t);
+	initTaquin(&taquin);
+	copyTaquin(&taquin, &result);
+
 	srand((unsigned)time(NULL));
-	mixTaquin(&t, minRandom, maxRandom);
+	//mixTaquin(&taquin, minRandom, maxRandom);
 
-	displayTaquin(&t, 3);
+	displayTaquin(&taquin, 3);
 	// BOUCLE DE JEU ! A DEVELOPPER
 
 	// On boucle tant que la solution n'a pas été trouvée*
@@ -269,10 +277,17 @@ int gameLoop(int hauteur, int largeur, int minRandom, int maxRandom)
 	char key;
 	while (!end)
 	{
-		key = _getch();
-
+		if (equalTaquin(&taquin, &result))
+		{
+			printf("Bravo vous avez gagne ! \n");
+			end = 1;
+			continue;
+		}
 		if (!_kbhit)
 			continue;
+
+		key = _getch();
+
 		switch ((int)key)
 		{
 		case 27: end = 1;
@@ -296,12 +311,12 @@ int gameLoop(int hauteur, int largeur, int minRandom, int maxRandom)
 		}
 		key = 0;
 
-		moveTaquin(&t, d);
-		displayTaquin(&t, 3);
+		moveTaquin(&taquin, d);
+		displayTaquin(&taquin, 3);
 	}
 
 
-	freeTaquin(&t);
+	freeTaquin(&taquin);
 	return 1;
 }
 

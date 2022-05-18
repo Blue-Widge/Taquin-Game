@@ -50,8 +50,8 @@ int main(int argc, char ** argv)
 				int maxRandom = 100;
 				char taquinFile[1024]="taquin.BMP";
 
-				hauteur = SIZE_MINI;
-				largeur = SIZE_MINI;
+				hauteur = SIZE_MAXI;
+				largeur = SIZE_MAXI;
 
 				switch(argc)
 				{
