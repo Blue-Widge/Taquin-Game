@@ -81,7 +81,10 @@ int displayCaseTaquin(TaquinSDL * pTaquinSDL,unsigned char caseTaquin, SDL_Rect*
 	 }
 	else
 	{
-		SDL_Rect squareFrom = { (caseTaquin % pTaquinSDL->taquin.largeur) * pTaquinSDL->resX, (caseTaquin / pTaquinSDL->taquin.largeur) * pTaquinSDL->resY, pTaquinSDL->resX, pTaquinSDL->resY };
+		SDL_Rect squareFrom = { (caseTaquin % pTaquinSDL->taquin.largeur) * pTaquinSDL->resX, 
+			(caseTaquin / pTaquinSDL->taquin.largeur) * pTaquinSDL->resY, 
+			pTaquinSDL->resX, pTaquinSDL->resY };
+
 		SDL_Rect squareTo = { x, y, pTaquinSDL->resX, pTaquinSDL->resY };
 		SDL_LowerBlit(pTaquinSDL->pFond, &squareFrom, pTaquinSDL->pWindow, &squareTo);
 	}
@@ -114,9 +117,9 @@ int displayTaquinSDL(TaquinSDL * pTaquinSDL)
 		{
 			for (int j = 0; j < largeur; ++j)
 			{
-				temp.x = j;
-				temp.y = i;
-				displayCaseTaquin(pTaquinSDL, pTaquinSDL->taquin.plateau[i][j], &temp, j * pTaquinSDL->resX, i * pTaquinSDL->resY, 1);
+				temp.x = j * pTaquinSDL->resX;
+				temp.y = i * pTaquinSDL->resY;
+				displayCaseTaquin(pTaquinSDL, pTaquinSDL->taquin.plateau[i][j], &temp, temp.x, temp.y, 1);
 			}
 		}
 
@@ -132,8 +135,7 @@ int displayTaquinSDL(TaquinSDL * pTaquinSDL)
 int gameLoopSDL(int hauteur,int largeur, char * pathBMPfile, int minRandom, int maxRandom)
 {
 	int end = 0;
-	TaquinSDL t;
-	t.taquin.x = t.taquin.y = 0;
+	TaquinSDL t = {0};
 	srand((unsigned)time(NULL));
 
 	// On crée le taquin et la fenêtre pour le dessiner

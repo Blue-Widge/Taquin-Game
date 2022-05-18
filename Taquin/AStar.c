@@ -20,7 +20,7 @@ ptrListAStar createNodeList(Taquin * pTaquin, int gValue, int fValue, deplacemen
 	list->m_lastMove = d;
 	list->m_taquin = pTaquin;
 	list->m_lastStep = pPrevPlay;
-	return NULL;
+	return list;
 }
 
 // Insertion dans la liste de façon triée ou non
@@ -31,7 +31,10 @@ int insertList(ptrListAStar * ppHead, ptrListAStar pNode, int tri)
 		return -1;
 
 	if (!(*ppHead))
+	{
 		(*ppHead) = pNode;
+		return 1;
+	}
 
 	if (!tri)
 	{
@@ -40,12 +43,13 @@ int insertList(ptrListAStar * ppHead, ptrListAStar pNode, int tri)
 		return 1;
 	}
 
-	ptrListAStar temp = (*ppHead), temp2;
+	ptrListAStar temp = (*ppHead);
+
 	while (temp->m_nextlist && temp->m_nextlist->m_distanceLeft < pNode->m_distanceLeft)
 		temp = temp->m_nextlist;
-	temp2 = temp->m_nextlist;
+
+	pNode->m_nextlist = temp->m_nextlist;
 	temp->m_nextlist = pNode;
-	pNode->m_nextlist = temp2;
 	return 1;
 }
 
@@ -64,10 +68,13 @@ ptrListAStar popList(ptrListAStar * ppHead)
 // fonction qui retourne le noeud dans lequel on trouve le taquin passé en paramètre (pointeur sur le pointeur dans la liste)
 ptrListAStar * isInList(ptrListAStar * ppHead, Taquin * pTaquin)
 {
-	ptrListAStar temp = (*ppHead);
-	while (temp && temp->m_taquin != pTaquin)
-		temp = temp->m_nextlist;
-	return &temp;
+	if (!ppHead || !(*ppHead))
+		return NULL;
+
+	ptrListAStar* temp = ppHead;
+	while ((*temp) && (*temp)->m_taquin != pTaquin)
+		(*temp) = (*temp)->m_nextlist;
+	return temp;
 }
 
 // fonction pour afficher une liste
@@ -96,47 +103,51 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 {
 	ptrListAStar openList = createNodeList(pTaquin, 0, h(pTaquin), AUCUN, NULL);
 	ptrListAStar closedList = NULL;
+
 	while (openList)
 	{
-		ptrListAStar minNode = openList->m_taquin;
-		popList(&minNode);
+		ptrListAStar current = popList(&openList);
+		displayTaquin(current->m_taquin, 1);
 		for (int i = 1; i < 5; ++i)
 		{
-			ptrListAStar newNode;
-			copyTaquin(&minNode, &newNode);
 			(*pNbTaquinsGeneres)++;
-			moveTaquin(&newNode, i);
-			if (equalTaquin(&minNode, &newNode))
+			ptrListAStar newNode;
+			Taquin* copy = calloc(1, sizeof(Taquin));
+			copyTaquin(current->m_taquin, copy);
+			if (!moveTaquin(copy, i))
 			{
-				popList(&newNode);
 				(*pNbTaquinsGeneres)--;
-			}
-			insertList(&minNode, newNode, 1);
-			if (endTaquin(newNode->m_taquin))
-			{
-				//completed
-				if (stepByStep)
-				{
-
-					return 1;
-				}
-
-				return 1;
-			}
-			newNode->m_distanceLeft = h(&newNode);
-			newNode->m_parcouru = minNode->m_parcouru + 1;
-			ptrListAStar search = isInList(&openList, &newNode);
-			if (search && (search->m_distanceLeft + search->m_parcouru) < (newNode->m_parcouru + newNode->m_distanceLeft))
-			{
-				popList(&newNode);
 				continue;
 			}
-			search = isInList(&closedList, &newNode);
-			if (search && (search->m_distanceLeft + search->m_parcouru) < (newNode->m_parcouru + newNode->m_distanceLeft))
+
+			if (endTaquin(copy))
 			{
-				insertList(&openList, newNode, 0);
+				if (stepByStep)
+				{
+					return 1;
+				}
+				return 1;
 			}
-			insertList(&openList, minNode, 0);
+
+			newNode = createNodeList(copy, current->m_parcouru + 1, current->m_parcouru + 1 + h(copy), i, current->m_lastStep);
+			ptrListAStar* searchOpen = isInList(&openList, copy);
+			ptrListAStar* searchClosed = isInList(&closedList, copy);
+
+			if (searchOpen && (*searchOpen) && (*searchOpen)->m_parcouru > newNode->m_parcouru)
+			{
+				ptrListAStar alreadyOpen = popList(searchOpen);
+				free(alreadyOpen->m_taquin);
+				insertList(&openList, newNode, 1);
+				continue;
+			}
+			if (searchClosed && (*searchClosed) && (*searchClosed)->m_parcouru > newNode->m_parcouru)
+			{
+				ptrListAStar alreadyClosed = popList(searchClosed);
+				free(alreadyClosed->m_taquin);
+				insertList(&openList, newNode, 1);
+				continue;
+			}
+			insertList(&openList, newNode, 1);
 		}
 	}
 	return 0;

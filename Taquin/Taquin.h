@@ -13,7 +13,7 @@
 
 
 // Nombre de cases maximum en largeur ou hauteur
-#define SIZE_MAXI	5
+#define SIZE_MAXI	3
 // Nombre de cases minimum en largeur ou hauteur
 #define SIZE_MINI	3
 

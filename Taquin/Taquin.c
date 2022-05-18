@@ -15,7 +15,14 @@ int copyTaquin(Taquin * pSrc, Taquin * pDest)
 	// TODO: copyTaquin*
 	if (!pDest)
 		return -1;
-	createTaquin(pDest, pSrc->hauteur, pSrc->largeur);
+
+	int hauteur = pSrc->hauteur;
+	int largeur = pSrc->largeur;
+	createTaquin(pDest, hauteur, largeur);
+
+	for (int i = 0; i < hauteur; ++i)
+		for (int j = 0; j < largeur; ++j)
+			pDest->plateau[i][j] = pSrc->plateau[i][j];
 
 	return pDest ? 1 : 0;
 }
@@ -224,7 +231,7 @@ int displayTaquin(Taquin * pTaquin, int offset)
 	if (!pTaquin || !(pTaquin->plateau))
 		return -1;
 
-	system("cls");
+	//system("cls");
 	int hauteur = pTaquin->hauteur;
 	int largeur = pTaquin->largeur;
 	unsigned char** plateau = pTaquin->plateau;
@@ -232,10 +239,11 @@ int displayTaquin(Taquin * pTaquin, int offset)
 	{
 		for (int j = 0; j < largeur; ++j)
 		{
-			printf("%hd\t", plateau[i][j], offset);
+			printf("%hd\t", plateau[i][j]);
 		}
 		printf("\n");
 	}
+	printf("\n");
 	return 1;
 }
 
@@ -257,8 +265,7 @@ int freeTaquin(Taquin * pTaquin)
 int gameLoop(int hauteur, int largeur, int minRandom, int maxRandom)
 {
 	int end = 0;
-	Taquin taquin;
-	taquin.plateau = NULL;
+	Taquin taquin = { 0 };
 	createTaquin(&taquin, hauteur, largeur);
 
 	initTaquin(&taquin);
@@ -281,7 +288,7 @@ int gameLoop(int hauteur, int largeur, int minRandom, int maxRandom)
 			end = 1;
 			continue;
 		}
-		if (!_kbhit)
+		if (!_kbhit())
 			continue;
 
 		key = _getch();
