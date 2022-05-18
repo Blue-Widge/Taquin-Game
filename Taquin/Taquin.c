@@ -109,7 +109,7 @@ int initTaquin(Taquin * pTaquin)
 	// TODO: initTaquin
 	if (!pTaquin)
 		return -1;
-
+	pTaquin->x = pTaquin->y = 0;
 	int hauteur = pTaquin->hauteur;
 	int largeur = pTaquin->largeur;
 	for (int i = 0; i < hauteur; ++i)
@@ -257,16 +257,14 @@ int freeTaquin(Taquin * pTaquin)
 int gameLoop(int hauteur, int largeur, int minRandom, int maxRandom)
 {
 	int end = 0;
-	Taquin taquin, result;
-	taquin.plateau = result.plateau = NULL;
+	Taquin taquin;
+	taquin.plateau = NULL;
 	createTaquin(&taquin, hauteur, largeur);
-	taquin.x = taquin.y = result.x = result.y = 0;
 
 	initTaquin(&taquin);
-	copyTaquin(&taquin, &result);
 
 	srand((unsigned)time(NULL));
-	//mixTaquin(&taquin, minRandom, maxRandom);
+	mixTaquin(&taquin, minRandom, maxRandom);
 
 	displayTaquin(&taquin, 3);
 	// BOUCLE DE JEU ! A DEVELOPPER
@@ -277,7 +275,7 @@ int gameLoop(int hauteur, int largeur, int minRandom, int maxRandom)
 	char key;
 	while (!end)
 	{
-		if (equalTaquin(&taquin, &result))
+		if (endTaquin(&taquin))
 		{
 			printf("Bravo vous avez gagne ! \n");
 			end = 1;

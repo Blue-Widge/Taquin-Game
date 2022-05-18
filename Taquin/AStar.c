@@ -27,8 +27,11 @@ ptrListAStar createNodeList(Taquin * pTaquin, int gValue, int fValue, deplacemen
 // si on passe le paramètre tri à 0, on insère en tête de liste
 int insertList(ptrListAStar * ppHead, ptrListAStar pNode, int tri)
 {
-	if (!ppHead || !(*ppHead) || !pNode)
+	if (!ppHead || !pNode)
 		return -1;
+
+	if (!(*ppHead))
+		(*ppHead) = pNode;
 
 	if (!tri)
 	{
@@ -50,6 +53,9 @@ int insertList(ptrListAStar * ppHead, ptrListAStar pNode, int tri)
 // Retourne le noeud prélevé
 ptrListAStar popList(ptrListAStar * ppHead)
 {
+	if (!ppHead || !(*ppHead))
+		return NULL;
+
 	ptrListAStar temp = (*ppHead);
 	(*ppHead) = temp->m_nextlist;
 	return temp;
@@ -88,8 +94,52 @@ int displayList(ptrListAStar pHead, int displayFGH)
 // pWindow
 int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *pNbDeplacements, unsigned long * pNbTaquinsGeneres, unsigned long * pTimeElapsed, int stepByStep, SDL_Surface * pWindow)
 {
-	createNodeList(pTaquin, 0, h(pTaquin), AUCUN, NULL);
-	return 1;
+	ptrListAStar openList = createNodeList(pTaquin, 0, h(pTaquin), AUCUN, NULL);
+	ptrListAStar closedList = NULL;
+	while (openList)
+	{
+		ptrListAStar minNode = openList->m_taquin;
+		popList(&minNode);
+		for (int i = 1; i < 5; ++i)
+		{
+			ptrListAStar newNode;
+			copyTaquin(&minNode, &newNode);
+			(*pNbTaquinsGeneres)++;
+			moveTaquin(&newNode, i);
+			if (equalTaquin(&minNode, &newNode))
+			{
+				popList(&newNode);
+				(*pNbTaquinsGeneres)--;
+			}
+			insertList(&minNode, newNode, 1);
+			if (endTaquin(newNode->m_taquin))
+			{
+				//completed
+				if (stepByStep)
+				{
+
+					return 1;
+				}
+
+				return 1;
+			}
+			newNode->m_distanceLeft = h(&newNode);
+			newNode->m_parcouru = minNode->m_parcouru + 1;
+			ptrListAStar search = isInList(&openList, &newNode);
+			if (search && (search->m_distanceLeft + search->m_parcouru) < (newNode->m_parcouru + newNode->m_distanceLeft))
+			{
+				popList(&newNode);
+				continue;
+			}
+			search = isInList(&closedList, &newNode);
+			if (search && (search->m_distanceLeft + search->m_parcouru) < (newNode->m_parcouru + newNode->m_distanceLeft))
+			{
+				insertList(&openList, newNode, 0);
+			}
+			insertList(&openList, minNode, 0);
+		}
+	}
+	return 0;
 }
 
 // fonction d'évaluation pour la résolution avec AStar
