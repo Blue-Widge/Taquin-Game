@@ -74,7 +74,7 @@ ptrListAStar* isInList(ptrListAStar * ppHead, Taquin * pTaquin)
 
 	ptrListAStar* cursor = ppHead;
 
-	while (cursor && (*cursor) && !equalTaquin((*cursor)->m_taquin, pTaquin))
+	while ((*cursor) && !equalTaquin((*cursor)->m_taquin, pTaquin))
 		cursor = &((*cursor)->m_nextlist);
 	return (*cursor) ? cursor : NULL;
 }
@@ -114,10 +114,10 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 		current = popList(&openList);
 		
 		printf(" Nb Taquins generes : %d\n", (*pNbTaquinsGeneres));
-		displayTaquin(current->m_taquin, 0);
+		//displayTaquin(current->m_taquin, 0);
 		for (int i = 1; i < 5; ++i)
 		{
-			childrenTaquin[i] = (Taquin*)calloc(1, sizeof(Taquin));
+			childrenTaquin[i] = (Taquin*) calloc(1, sizeof(Taquin));
 			copyTaquin(current->m_taquin, childrenTaquin[i]);
 			(*pNbTaquinsGeneres)++;
 			if (!moveTaquin(childrenTaquin[i], i))
@@ -149,15 +149,18 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 					(*pTabDeplacement)[i] = cursor->m_lastMove;
 					cursor = cursor->m_lastStep;
 				}
-
-				printf("nb deplacements : %d\n", (*pNbDeplacements));
+				free(childrenTaquin);
+				freeList(childrenNode[i], 0);
+				free(childrenNode);
+				freeList(openList, 0);
+				freeList(closedList, 1);
 				if (stepByStep)
 				{
 					return 1;
 				}
 				return 1;
 			}
-			if( (isInList(&closedList, childrenTaquin[i]))|| (isInList(&openList, childrenTaquin[i])))
+			if(isInList(&closedList, childrenTaquin[i]) || (isInList(&openList, childrenTaquin[i])))
 			{
 				freeTaquin(childrenTaquin[i]);
 				free(childrenTaquin[i]);
@@ -169,6 +172,11 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 		insertList(&closedList, current, 0);
 	}
 	printf("Couldn't find any solutions...\n");
+
+	free(childrenTaquin);
+	free(childrenNode);
+	freeList(openList, 0);
+	freeList(closedList, 1);
 	return 0;
 }
 
@@ -183,8 +191,39 @@ int h(Taquin * pTaquin)
 	{
 		for (int j = 0; j < largeur; ++j)
 		{
-			distance += abs((pTaquin->plateau[i][j] / largeur + pTaquin->plateau[i][j] % largeur) - i - j);
+			distance += abs((pTaquin->plateau[i][j] / largeur) - i) + abs((pTaquin->plateau[i][j] % largeur) - j);
 		}
 	}
 	return distance;
 }
+
+void freeList(ptrListAStar p_list, int closed)
+{
+	if (!p_list)
+		return;
+
+	ptrListAStar cursor1, cursor2;
+	cursor1 = p_list;
+	cursor2 = p_list->m_nextlist;
+
+	while (cursor2)
+	{
+		freeTaquin(cursor1->m_taquin);
+		free(cursor1->m_taquin);
+		cursor1->m_taquin = NULL;
+		free(cursor1);
+		cursor1 = cursor2;
+		cursor2 = cursor2->m_nextlist;
+	}
+
+	if (!closed)
+	{
+	freeTaquin(cursor1->m_taquin);
+		free(cursor1->m_taquin);
+		cursor1->m_taquin = NULL;
+	}
+	free(cursor1);
+	p_list = NULL;
+}
+
+
