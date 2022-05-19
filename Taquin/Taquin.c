@@ -26,7 +26,7 @@ int copyTaquin(Taquin * pSrc, Taquin * pDest)
 		for (int j = 0; j < largeur; ++j)
 			pDest->plateau[i][j] = pSrc->plateau[i][j];
 
-	return pDest ? 1 : 0;
+	return (pDest != NULL) * 1;
 }
 
 // fonction qui renvoie 1 si les 2 taquins sont identiques

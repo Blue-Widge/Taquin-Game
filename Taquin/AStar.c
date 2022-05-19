@@ -87,7 +87,7 @@ int displayList(ptrListAStar pHead, int displayFGH)
 	while (temp)
 	{
 		displayTaquin(temp->m_taquin, 3);
-		(displayFGH) ? printf("F : %d; G : %d; H : %d;\n\n", pHead->m_poidsMoves + pHead->m_parcouru, pHead->m_poidsMoves, pHead->m_parcouru) : printf("\n\n");
+		(displayFGH) * printf("F : %d; G : %d; H : %d;\n\n", pHead->m_poidsMoves + pHead->m_parcouru, pHead->m_poidsMoves, pHead->m_parcouru);
 		temp = temp->m_nextlist;
 	}
 	return 1;
@@ -114,7 +114,6 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 		current = popList(&openList);
 		
 		printf(" Nb Taquins generes : %d\n", (*pNbTaquinsGeneres));
-		//displayTaquin(current->m_taquin, 0);
 		for (int i = 1; i < 5; ++i)
 		{
 			childrenTaquin[i] = (Taquin*) calloc(1, sizeof(Taquin));
@@ -125,8 +124,6 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 				free(childrenTaquin[i]);
 				continue;
 			}
-
-			displayTaquin(childrenTaquin[i], 0);
 
 			childrenNode[i] = createNodeList(childrenTaquin[i], current->m_parcouru + 1,
 				current->m_parcouru + 1 + h(childrenTaquin[i]), i, current);
