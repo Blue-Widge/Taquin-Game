@@ -78,6 +78,7 @@ int displayCaseTaquin(TaquinSDL * pTaquinSDL,unsigned char caseTaquin, SDL_Rect*
 		SDL_Rect squareTo = { x, y, pTaquinSDL->resX, pTaquinSDL->resY };
 		SDL_Surface* BLACK = SDL_CreateRGBSurface(0, blackWindow.w, blackWindow.h, 32, 0, 0, 0, 0);
 		SDL_LowerBlit(BLACK, &blackWindow, pTaquinSDL->pWindow, &squareTo);
+		SDL_FreeSurface(BLACK);
 	 }
 	else
 	{

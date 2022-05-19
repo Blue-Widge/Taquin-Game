@@ -20,7 +20,7 @@
 typedef struct sListAStar
 {
 	int m_parcouru;						// Distance déjà parcourue entre l'état initial et l'état courant
-	int m_distanceLeft;					// Evaluation de la distance à parcourir entre l'état initial et l'état final
+	int m_poidsMoves;					// Evaluation de la distance à parcourir entre l'état initial et l'état final
 	Taquin* m_taquin;						// Taquin contenu dans le noeud courant
 	deplacement m_lastMove;					// dernier déplacement effectué pour arriver à ce taquin
 	struct sListAStar* m_lastStep;							// Pointeur vers le noeud correspondant à l'étape précédente dans la solution

@@ -18,8 +18,10 @@ int copyTaquin(Taquin * pSrc, Taquin * pDest)
 
 	int hauteur = pSrc->hauteur;
 	int largeur = pSrc->largeur;
-	createTaquin(pDest, hauteur, largeur);
 
+	createTaquin(pDest, hauteur, largeur);
+	pDest->x = pSrc->x;
+	pDest->y = pSrc->y;
 	for (int i = 0; i < hauteur; ++i)
 		for (int j = 0; j < largeur; ++j)
 			pDest->plateau[i][j] = pSrc->plateau[i][j];
