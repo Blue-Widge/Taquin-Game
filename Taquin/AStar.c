@@ -134,6 +134,23 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 			if (endTaquin(childrenTaquin[i]))
 			{
 				//completed
+
+				ptrListAStar cursor = childrenNode[i];
+				while (cursor->m_lastStep)
+				{
+					(*pNbDeplacements)++;
+					cursor = cursor->m_lastStep;
+				}
+
+				(*pTabDeplacement) = (deplacement*) calloc (*pNbDeplacements, sizeof(deplacement));
+				cursor = childrenNode[i];
+				for (int i = (*pNbDeplacements) - 1; i > -1 ; --i)
+				{
+					(*pTabDeplacement)[i] = cursor->m_lastMove;
+					cursor = cursor->m_lastStep;
+				}
+
+				printf("nb deplacements : %d\n", (*pNbDeplacements));
 				if (stepByStep)
 				{
 					return 1;
@@ -169,5 +186,5 @@ int h(Taquin * pTaquin)
 			distance += abs((pTaquin->plateau[i][j] / largeur + pTaquin->plateau[i][j] % largeur) - i - j);
 		}
 	}
-	return 0;
+	return distance;
 }
