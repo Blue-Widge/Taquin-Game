@@ -124,20 +124,6 @@ int displayTaquinSDL(TaquinSDL * pTaquinSDL, unsigned char finished)
 				displayCaseTaquin(pTaquinSDL, pTaquinSDL->taquin.plateau[i][j], &rect, rect.x, rect.y, 1, finished);
 			}
 		}
-
-		if (finished)
-		{
-			//SDL_Surface colorFilter = SDL_CreateRGBSurface(0, resX, resY, 32, );
-			for (int i = 0; i < hauteur; ++i)
-			{
-				for (int j = 0; j < largeur; ++j)
-				{
-					rect.x = j * resX;
-					rect.y = i * resY;
-					//animation blanche quand fini
-				}
-			}
-		}
 		// On met à jour la fenêtre complète
 		SDL_UpdateRect(pTaquinSDL->pWindow,0,0,0,0);
 

@@ -152,6 +152,15 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 				freeList(closedList, pTaquin);
 				return 1;
 			}
+
+
+			//check if the move doesn't cancel grandpa's move
+			if (current->m_lastStep && equalTaquin(childrenTaquin, current->m_lastStep->m_taquin))
+			{
+				freeList(childrenNode, pTaquin);
+				continue;
+			}
+
 			if(isInList(&closedList, childrenTaquin) || (isInList(&openList, childrenTaquin)))
 			{
 				freeList(childrenNode, pTaquin);
