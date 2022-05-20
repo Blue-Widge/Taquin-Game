@@ -42,7 +42,6 @@ int insertList(ptrListAStar * ppHead, ptrListAStar pNode, int tri)
 		(*ppHead) = pNode;
 		return 1;
 	}
-
 	ptrListAStar temp = (*ppHead);
 
 	while (temp->m_nextlist && temp->m_nextlist->m_poidsMoves <= pNode->m_poidsMoves)

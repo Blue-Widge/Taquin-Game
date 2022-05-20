@@ -63,7 +63,7 @@ int createTaquinSDL(TaquinSDL * pTaquinSDL,int hauteur, int largeur, char * path
 }
 
 
-int displayCaseTaquin(TaquinSDL * pTaquinSDL,unsigned char caseTaquin, SDL_Rect* pDest, int x, int y, int refresh)
+int displayCaseTaquin(TaquinSDL * pTaquinSDL,unsigned char caseTaquin, SDL_Rect* pDest, int x, int y, int refresh, unsigned char finished)
 {
 	// TODO: displayCaseTaquin
 	// on définit où on veut la dessiner
@@ -72,7 +72,7 @@ int displayCaseTaquin(TaquinSDL * pTaquinSDL,unsigned char caseTaquin, SDL_Rect*
 	// Si la case n'est pas vide ...
 	// on calcule où est la case "caseTaquin" dans l'image initiale pour -par la suite - venir découper la zone qui correspond à la case
 
-	if (!caseTaquin)
+	if (!caseTaquin && !finished)
 	{
 		SDL_Rect blackWindow = { 0, 0, pTaquinSDL->resX, pTaquinSDL->resY };
 		SDL_Rect squareTo = { x, y, pTaquinSDL->resX, pTaquinSDL->resY };
@@ -97,7 +97,7 @@ int displayCaseTaquin(TaquinSDL * pTaquinSDL,unsigned char caseTaquin, SDL_Rect*
 }
 
 // fonction pour rendre le taquin dans son état actuel
-int displayTaquinSDL(TaquinSDL * pTaquinSDL)
+int displayTaquinSDL(TaquinSDL * pTaquinSDL, unsigned char finished)
 {
 	// Test pour vérifier que les données passées ne sont pas corrompues
 	if(!pTaquinSDL || !pTaquinSDL->taquin.plateau || !pTaquinSDL->pWindow ) return 0;
@@ -120,7 +120,9 @@ int displayTaquinSDL(TaquinSDL * pTaquinSDL)
 			{
 				temp.x = j * pTaquinSDL->resX;
 				temp.y = i * pTaquinSDL->resY;
-				displayCaseTaquin(pTaquinSDL, pTaquinSDL->taquin.plateau[i][j], &temp, temp.x, temp.y, 1);
+				temp.h = pTaquinSDL->resY;
+				temp.w = pTaquinSDL->resX;
+				displayCaseTaquin(pTaquinSDL, pTaquinSDL->taquin.plateau[i][j], &temp, temp.x, temp.y, 1, finished);
 			}
 		}
 
@@ -152,7 +154,7 @@ int gameLoopSDL(int hauteur,int largeur, char * pathBMPfile, int minRandom, int 
 		mixTaquin(&(t.taquin), minRandom, maxRandom);
 
 		// On affiche le taquin mélangé
-		displayTaquinSDL(&t);
+		displayTaquinSDL(&t, 0);
 
 		end = 0;
 
@@ -221,7 +223,7 @@ int gameLoopSDL(int hauteur,int largeur, char * pathBMPfile, int minRandom, int 
 												// On effectue le déplacement, on affiche le nouveau plateau et on attend un appui sur une touche pour continuer
 												if(tabDeplacements[i]!=AUCUN)
 												{
-													if(moveTaquin(&(t.taquin),tabDeplacements[i])) displayTaquinSDL(&t);
+													if(moveTaquin(&(t.taquin),tabDeplacements[i])) displayTaquinSDL(&t, 0);
 													else break;
 												}
 												switch (tabDeplacements[i])
@@ -242,10 +244,12 @@ int gameLoopSDL(int hauteur,int largeur, char * pathBMPfile, int minRandom, int 
 													printf("Bizarre ce mouvement . . .\n");
 													break;
 												}
+												SDL_Delay(200);
+												displayTaquinSDL(&t, 0);
 											}
 										}
 										// Si la résolution n'a pas fonctionné, on affiche le taquin tel qu'il était avant résolution (on efface l'icone de "progression" si elle avait été dessinée)
-										else displayTaquinSDL(&t);
+										else displayTaquinSDL(&t, 0);
 
 										if(tabDeplacements) 
 										{
@@ -257,7 +261,7 @@ int gameLoopSDL(int hauteur,int largeur, char * pathBMPfile, int minRandom, int 
 									break;
 							}
 							
-							if(d!=AUCUN && moveTaquin(&(t.taquin),d)) displayTaquinSDL(&t);
+							if(d!=AUCUN && moveTaquin(&(t.taquin),d)) displayTaquinSDL(&t, 0);
 
 						}
 						break;
@@ -283,7 +287,7 @@ int gameLoopSDL(int hauteur,int largeur, char * pathBMPfile, int minRandom, int 
 								// ...
 									
 								// On applique le déplacement
-								if(moveTaquin(&(t.taquin),d)) displayTaquinSDL(&t);
+								if(moveTaquin(&(t.taquin),d)) displayTaquinSDL(&t, 0);
 							}
 						}
 						break;
@@ -307,6 +311,7 @@ int gameLoopSDL(int hauteur,int largeur, char * pathBMPfile, int minRandom, int 
 		{
 			// Affichage de l'image complète par dessus le tout
 
+			displayTaquinSDL(&t, 1);
 			SDL_Delay(1000);
 		}
 
