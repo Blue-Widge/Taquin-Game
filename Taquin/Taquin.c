@@ -38,9 +38,7 @@ int equalTaquin(Taquin * pTaquin1, Taquin * pTaquin2)
 	if (!pTaquin1 || !pTaquin2)
 		return -1;
 
-	if (pTaquin1->hauteur != pTaquin2->hauteur ||
-		pTaquin1->largeur != pTaquin2->largeur ||
-		pTaquin1->x != pTaquin2->x			   ||
+	if (pTaquin1->x != pTaquin2->x			   ||
 		pTaquin1->y != pTaquin2->y)
 	{	return 0;	}
 
