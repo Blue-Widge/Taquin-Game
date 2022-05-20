@@ -107,11 +107,10 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 	ptrListAStar current = NULL;
 	ptrListAStar childrenNode = NULL;
 	Taquin* childrenTaquin = NULL;
+	unsigned long startTime = SDL_GetTicks();
 	while (openList)
 	{
 		current = popList(&openList);
-		
-		printf(" Nb Taquins generes : %d\n", (*pNbTaquinsGeneres));
 		for (int i = 1; i < 5; ++i)
 		{
 			childrenTaquin = (Taquin*) calloc(1, sizeof(Taquin));
@@ -146,14 +145,11 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 					(*pTabDeplacement)[i] = cursor->m_lastMove;
 					cursor = cursor->m_lastStep;
 				}
+				(*pTimeElapsed) = SDL_GetTicks() - startTime;
 				freeList(childrenNode, pTaquin);
 				freeList(current, pTaquin);
 				freeList(openList, pTaquin);
 				freeList(closedList, pTaquin);
-				if (stepByStep)
-				{
-					return 1;
-				}
 				return 1;
 			}
 			if(isInList(&closedList, childrenTaquin) || (isInList(&openList, childrenTaquin)))
@@ -176,7 +172,7 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 // fonction d'évaluation pour la résolution avec AStar
 int h(Taquin * pTaquin)
 {
-	int distance = 0;
+	int distance = -1;
 	int hauteur = pTaquin->hauteur;
 	int largeur = pTaquin->largeur;
 
@@ -196,11 +192,11 @@ int h(Taquin * pTaquin)
 		if (pTaquin->plateau[bottom][i] != bottom / hauteur + i)
 			return distance;
 	}
-	distance -= 10;
+	distance -= 20;
 	if (hauteur == 3)
 		return distance;
 
-	bottom -= 1;
+	--bottom;
 
 	for (int i = 0; i < largeur; ++i)
 	{

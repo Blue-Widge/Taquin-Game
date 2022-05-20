@@ -17,9 +17,9 @@
 #include <stdlib.h>
 
 // Nombre de cases maximum en largeur ou hauteur
-#define SIZE_MAXI	2
+#define SIZE_MAXI	4
 // Nombre de cases minimum en largeur ou hauteur
-#define SIZE_MINI	2
+#define SIZE_MINI	4
 
 // Case vide, on définit la case vide comme étant la valeur 0, elle doit être en haut à gauche du taquin quand il est terminé
 #define VIDE 0

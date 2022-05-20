@@ -83,14 +83,13 @@ int displayCaseTaquin(TaquinSDL * pTaquinSDL,unsigned char caseTaquin, SDL_Rect*
 	else
 	{
 		SDL_Rect squareFrom = { (caseTaquin % pTaquinSDL->taquin.largeur) * pTaquinSDL->resX, 
-			(caseTaquin / pTaquinSDL->taquin.largeur) * pTaquinSDL->resY, 
+			(caseTaquin / pTaquinSDL->taquin.hauteur) * pTaquinSDL->resY, 
 			pTaquinSDL->resX, pTaquinSDL->resY };
 
 		SDL_Rect squareTo = { x, y, pTaquinSDL->resX, pTaquinSDL->resY };
 		SDL_LowerBlit(pTaquinSDL->pFond, &squareFrom, pTaquinSDL->pWindow, &squareTo);
 	}
 	// On dessine la case dans la fenêtre (en découpant dans l'image initiale avec la zone définie ci-dessus)
-
 	if(refresh) SDL_UpdateRect(pTaquinSDL->pWindow,pDest->x,pDest->y,pDest->w,pDest->h);
 
 	return 1;
@@ -113,20 +112,32 @@ int displayTaquinSDL(TaquinSDL * pTaquinSDL, unsigned char finished)
 
 		// TODO: displayTaquinSDL
 		// ...
-		SDL_Rect temp;
+		int resX = pTaquinSDL->resX;
+		int resY = pTaquinSDL->resY;
+		SDL_Rect rect = {0, 0, resX, resY};
 		for (int i = 0; i < hauteur; ++i)
 		{
 			for (int j = 0; j < largeur; ++j)
 			{
-				temp.x = j * pTaquinSDL->resX;
-				temp.y = i * pTaquinSDL->resY;
-				temp.h = pTaquinSDL->resY;
-				temp.w = pTaquinSDL->resX;
-				displayCaseTaquin(pTaquinSDL, pTaquinSDL->taquin.plateau[i][j], &temp, temp.x, temp.y, 1, finished);
+				rect.x = j * pTaquinSDL->resX;
+				rect.y = i * pTaquinSDL->resY;
+				displayCaseTaquin(pTaquinSDL, pTaquinSDL->taquin.plateau[i][j], &rect, rect.x, rect.y, 1, finished);
 			}
 		}
 
-
+		if (finished)
+		{
+			//SDL_Surface colorFilter = SDL_CreateRGBSurface(0, resX, resY, 32, );
+			for (int i = 0; i < hauteur; ++i)
+			{
+				for (int j = 0; j < largeur; ++j)
+				{
+					rect.x = j * resX;
+					rect.y = i * resY;
+					//animation blanche quand fini
+				}
+			}
+		}
 		// On met à jour la fenêtre complète
 		SDL_UpdateRect(pTaquinSDL->pWindow,0,0,0,0);
 
