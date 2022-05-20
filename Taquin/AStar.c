@@ -146,10 +146,10 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 					cursor = cursor->m_lastStep;
 				}
 				(*pTimeElapsed) = SDL_GetTicks() - startTime;
-				freeList(childrenNode, pTaquin);
-				freeList(current, pTaquin);
-				freeList(openList, pTaquin);
-				freeList(closedList, pTaquin);
+				freeList(&childrenNode, pTaquin);
+				freeList(&current, pTaquin);
+				freeList(&openList, pTaquin);
+				freeList(&closedList, pTaquin);
 				return 1;
 			}
 
@@ -157,13 +157,13 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 			//check if the move doesn't cancel grandpa's move
 			if (current->m_lastStep && equalTaquin(childrenTaquin, current->m_lastStep->m_taquin))
 			{
-				freeList(childrenNode, pTaquin);
+				freeList(&childrenNode, pTaquin);
 				continue;
 			}
 
 			if(isInList(&closedList, childrenTaquin) || (isInList(&openList, childrenTaquin)))
 			{
-				freeList(childrenNode, pTaquin);
+				freeList(&childrenNode, pTaquin);
 				continue;
 			}
 			insertList(&openList, childrenNode, 1);
@@ -171,10 +171,10 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 		insertList(&closedList, current, 0);
 	}
 	printf("Couldn't find any solutions...\n");
-	freeList(childrenNode, pTaquin);
-	freeList(current, pTaquin);
-	freeList(openList, pTaquin);
-	freeList(closedList, pTaquin);
+	freeList(&childrenNode, pTaquin);
+	freeList(&current, pTaquin);
+	freeList(&openList, pTaquin);
+	freeList(&closedList, pTaquin);
 	return 0;
 }
 
@@ -215,13 +215,13 @@ int h(Taquin * pTaquin)
 	return distance - 20;
 }
 
-void freeList(ptrListAStar p_list, Taquin* p_originel)
+void freeList(ptrListAStar* p_list, Taquin* p_originel)
 {
 	if (!p_list)
 		return;
 
 	ptrListAStar cursor = NULL;
-	while (cursor = popList(&p_list))
+	while (cursor = popList(p_list))
 	{
 		
 		if (cursor->m_taquin != p_originel)
@@ -232,7 +232,7 @@ void freeList(ptrListAStar p_list, Taquin* p_originel)
 		}
 		free(cursor);
 	}
-	p_list = NULL;
+	(*p_list) = NULL;
 }
 
 

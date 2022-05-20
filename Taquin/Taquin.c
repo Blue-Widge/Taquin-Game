@@ -38,18 +38,10 @@ int equalTaquin(Taquin * pTaquin1, Taquin * pTaquin2)
 	if (!pTaquin1 || !pTaquin2)
 		return -1;
 
-	if (pTaquin1->hauteur != pTaquin2->hauteur ||
-		pTaquin1->largeur != pTaquin2->largeur ||
-		pTaquin1->x != pTaquin2->x			   ||
-		pTaquin1->y != pTaquin2->y)
+	if (pTaquin1->x != pTaquin2->x ||
+		pTaquin1->y != pTaquin2->y ||
+		pTaquin1->m_checksum != pTaquin2->m_checksum)
 	{	return 0;	}
-
-	int hauteur = pTaquin1->hauteur;
-	int largeur = pTaquin1->largeur;
-
-	for (int i = 0; i < hauteur; ++i)
-		for (int j = 0; j < largeur; ++j)
-			if (pTaquin1->plateau[i][j] != pTaquin2->plateau[i][j]) return 0;
 
 	return 1;
 }
@@ -124,6 +116,7 @@ int initTaquin(Taquin * pTaquin)
 	for (int i = 0; i < hauteur; ++i)
 		for (int j = 0; j < largeur; ++j)
 			pTaquin->plateau[i][j] = i * largeur + j;
+	updateChecksum(pTaquin);
 	return 1;
 }
 
@@ -168,6 +161,7 @@ int moveTaquin(Taquin * pTaquin, deplacement d)
 		pTaquin->plateau[y][x - 1] ^= pTaquin->plateau[y][x];
 		pTaquin->plateau[y][x] ^= pTaquin->plateau[y][x - 1];
 		pTaquin->x = x - 1;
+		updateChecksum(pTaquin);
 		return 1;
 	}
 	if (d == HAUT && y > 0)
@@ -176,6 +170,7 @@ int moveTaquin(Taquin * pTaquin, deplacement d)
 		pTaquin->plateau[y - 1][x] ^= pTaquin->plateau[y][x];
 		pTaquin->plateau[y][x] ^= pTaquin->plateau[y - 1][x];
 		pTaquin->y = y - 1;
+		updateChecksum(pTaquin);
 		return 1;
 	}
 	if (d == DROITE && x < pTaquin->largeur - 1)
@@ -184,6 +179,7 @@ int moveTaquin(Taquin * pTaquin, deplacement d)
 		pTaquin->plateau[y][x + 1] ^= pTaquin->plateau[y][x];
 		pTaquin->plateau[y][x] ^= pTaquin->plateau[y][x + 1];
 		pTaquin->x = x + 1;
+		updateChecksum(pTaquin);
 		return 1;
 	}
 	if (d == BAS && y < pTaquin->hauteur - 1)
@@ -192,6 +188,7 @@ int moveTaquin(Taquin * pTaquin, deplacement d)
 		pTaquin->plateau[y + 1][x] ^= pTaquin->plateau[y][x];
 		pTaquin->plateau[y][x] ^= pTaquin->plateau[y + 1][x];
 		pTaquin->y = y + 1;
+		updateChecksum(pTaquin);
 		return 1;
 	}
 
@@ -327,3 +324,17 @@ int gameLoop(int hauteur, int largeur, int minRandom, int maxRandom)
 	return 1;
 }
 
+int updateChecksum(Taquin* p_taquin)
+{
+	if (!p_taquin)
+		return 0;
+
+	int hauteur = p_taquin->hauteur;
+	int largeur = p_taquin->largeur;
+	unsigned long long int checksum = 0;
+	for (int i = 0; i < hauteur; ++i)
+		for (int j = 0; j < largeur; ++j)
+			checksum = (checksum << 4) ^ p_taquin->plateau[i][j];
+	p_taquin->m_checksum = checksum;
+	return 1;
+}
