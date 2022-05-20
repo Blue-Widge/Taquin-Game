@@ -33,6 +33,7 @@ typedef struct sTaquin {
 	unsigned char ** plateau;			// Tableau contenant le taquin (
 	unsigned char hauteur,largeur;		// Taille du plateau
 	unsigned char x,y;					// Position de la case vide à déplacer
+	unsigned long long int m_checksum;	//checksum pour comparaison
 } Taquin;
 
 
@@ -73,6 +74,7 @@ int freeTaquin(Taquin * pTaquin);
 // Boucle de jeu 
 int gameLoop(int hauteur,int largeur,int minRandom, int maxRandom);
 
-
+//update le checksum a l initialisation ou chaque move
+void updateChecksum(Taquin* p_taquin);
 
 #endif

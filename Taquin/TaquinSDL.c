@@ -119,8 +119,8 @@ int displayTaquinSDL(TaquinSDL * pTaquinSDL, unsigned char finished)
 		{
 			for (int j = 0; j < largeur; ++j)
 			{
-				rect.x = j * pTaquinSDL->resX;
-				rect.y = i * pTaquinSDL->resY;
+				rect.x = j * resX;
+				rect.y = i * resY;
 				displayCaseTaquin(pTaquinSDL, pTaquinSDL->taquin.plateau[i][j], &rect, rect.x, rect.y, 1, finished);
 			}
 		}

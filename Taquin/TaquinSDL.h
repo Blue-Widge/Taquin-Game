@@ -34,7 +34,7 @@ int createTaquinSDL(TaquinSDL * pTaquinSDL,int hauteur, int largeur, char * path
 // Fonction pour dessiner une case sur le fond
 int displayCaseTaquin(TaquinSDL * pTaquinSDL,unsigned char caseTaquin, SDL_Rect * pDest, int x, int y, int refresh, unsigned char finished);
 // fonction pour rendre le taquin dans son état actuel
-int displayTaquinSDL(TaquinSDL * pTaquinSDL);
+int displayTaquinSDL(TaquinSDL* pTaquinSDL, unsigned char finished);
 // fonction permettant de faire le rendu SDL du taquin et de jouer (gestion des évènements à l'intérieur de la fonction)
 int gameLoopSDL(int hauteur,int largeur, char * pathBMPfile, int minRandom, int maxRandom);
 // fonction pour libérer le taquins et les surfaces SDL utilisées

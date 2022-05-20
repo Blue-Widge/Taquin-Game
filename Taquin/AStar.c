@@ -85,7 +85,7 @@ int displayList(ptrListAStar pHead, int displayFGH)
 	while (temp)
 	{
 		displayTaquin(temp->m_taquin, 3);
-		(displayFGH) * printf("F : %d; G : %d; H : %d;\n\n", pHead->m_poidsMoves + pHead->m_parcouru, pHead->m_poidsMoves, pHead->m_parcouru);
+		(displayFGH) ? printf("F : %d; G : %d; H : %d;\n\n", pHead->m_poidsMoves + pHead->m_parcouru, pHead->m_poidsMoves, pHead->m_parcouru) : printf("\n\n");
 		temp = temp->m_nextlist;
 	}
 	return 1;

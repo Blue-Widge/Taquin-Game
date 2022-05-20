@@ -26,6 +26,8 @@ int copyTaquin(Taquin * pSrc, Taquin * pDest)
 		for (int j = 0; j < largeur; ++j)
 			pDest->plateau[i][j] = pSrc->plateau[i][j];
 
+	pDest->m_checksum = pSrc->m_checksum;
+
 	return (pDest != NULL) * 1;
 }
 
@@ -38,18 +40,7 @@ int equalTaquin(Taquin * pTaquin1, Taquin * pTaquin2)
 	if (!pTaquin1 || !pTaquin2)
 		return -1;
 
-	if (pTaquin1->x != pTaquin2->x			   ||
-		pTaquin1->y != pTaquin2->y)
-	{	return 0;	}
-
-	int hauteur = pTaquin1->hauteur;
-	int largeur = pTaquin1->largeur;
-
-	for (int i = 0; i < hauteur; ++i)
-		for (int j = 0; j < largeur; ++j)
-			if (pTaquin1->plateau[i][j] != pTaquin2->plateau[i][j]) return 0;
-
-	return 1;
+	return (pTaquin1->m_checksum == pTaquin2->m_checksum);
 }
 
 // Fonction qui crée un plateau de taquin 
@@ -116,12 +107,17 @@ int initTaquin(Taquin * pTaquin)
 	// TODO: initTaquin
 	if (!pTaquin)
 		return -1;
-	pTaquin->x = pTaquin->y = 0;
+	pTaquin->x = pTaquin->y = 0; 
+
+	updateChecksum(pTaquin);
+
 	int hauteur = pTaquin->hauteur;
 	int largeur = pTaquin->largeur;
 	for (int i = 0; i < hauteur; ++i)
 		for (int j = 0; j < largeur; ++j)
+		{
 			pTaquin->plateau[i][j] = i * largeur + j;
+		}
 	return 1;
 }
 
@@ -136,7 +132,6 @@ int mixTaquin(Taquin * pTaquin, int minRandom, int maxRandom)
 	int largeur = pTaquin->largeur;
 	int hauteur = pTaquin->hauteur;
 	deplacement possibleMove = AUCUN;
-	int x, y;
 	int nbCoups = rand() % (maxRandom - minRandom + 1) + minRandom;
 
 	while (nbCoups)
@@ -166,6 +161,7 @@ int moveTaquin(Taquin * pTaquin, deplacement d)
 		pTaquin->plateau[y][x - 1] ^= pTaquin->plateau[y][x];
 		pTaquin->plateau[y][x] ^= pTaquin->plateau[y][x - 1];
 		pTaquin->x = x - 1;
+		updateChecksum(pTaquin);
 		return 1;
 	}
 	if (d == HAUT && y > 0)
@@ -174,6 +170,7 @@ int moveTaquin(Taquin * pTaquin, deplacement d)
 		pTaquin->plateau[y - 1][x] ^= pTaquin->plateau[y][x];
 		pTaquin->plateau[y][x] ^= pTaquin->plateau[y - 1][x];
 		pTaquin->y = y - 1;
+		updateChecksum(pTaquin);
 		return 1;
 	}
 	if (d == DROITE && x < pTaquin->largeur - 1)
@@ -182,6 +179,7 @@ int moveTaquin(Taquin * pTaquin, deplacement d)
 		pTaquin->plateau[y][x + 1] ^= pTaquin->plateau[y][x];
 		pTaquin->plateau[y][x] ^= pTaquin->plateau[y][x + 1];
 		pTaquin->x = x + 1;
+		updateChecksum(pTaquin);
 		return 1;
 	}
 	if (d == BAS && y < pTaquin->hauteur - 1)
@@ -190,6 +188,7 @@ int moveTaquin(Taquin * pTaquin, deplacement d)
 		pTaquin->plateau[y + 1][x] ^= pTaquin->plateau[y][x];
 		pTaquin->plateau[y][x] ^= pTaquin->plateau[y + 1][x];
 		pTaquin->y = y + 1;
+		updateChecksum(pTaquin);
 		return 1;
 	}
 
@@ -209,18 +208,8 @@ int endTaquin(Taquin * pTaquin)
 	// TODO: endTaquin
 	if (!pTaquin)
 		return -1;
-	int hauteur = pTaquin->hauteur;
-	int largeur = pTaquin->largeur;
-	unsigned char** plateau = pTaquin->plateau;
-	for (int i = 0; i < hauteur; ++i)
-	{
-		for (int j = 0; j < largeur; ++j)
-		{
-			if (plateau[i][j] != (i * largeur + j))
-				return 0;
-		}
-	}
-	return 1;
+	
+	return (!pTaquin->m_checksum);
 }
 
 // fonction d'affichage du taquin
@@ -325,3 +314,13 @@ int gameLoop(int hauteur, int largeur, int minRandom, int maxRandom)
 	return 1;
 }
 
+void updateChecksum(Taquin* p_taquin)
+{
+	int hauteur = p_taquin->hauteur;
+	int largeur = p_taquin->largeur;
+
+	unsigned long long int checksum = 0;
+	for (unsigned long long int i = 0; i < hauteur; ++i)
+		for (unsigned long long int j = 0; j < largeur; ++j)
+			checksum = (checksum << 4) ^ ((i * largeur) + j);
+}
