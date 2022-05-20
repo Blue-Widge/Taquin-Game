@@ -1,10 +1,12 @@
-#include <stdio.h>
+#define _CRTDBG_MAP_ALLOC
+#define _CRTDBG_MAP_ALLOC_NEW
+#include <crtdbg.h>
+#include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "taquinSDL.h"
 
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
 
 
 void pause()
@@ -96,6 +98,6 @@ int main(int argc, char ** argv)
 
 			break;
 	}
-
+	_CrtDumpMemoryLeaks();
 	return 0;
 }

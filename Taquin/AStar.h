@@ -10,7 +10,11 @@
 #ifndef _ASTAR_
 
 #define _ASTAR_
-
+#define _CRTDBG_MAP_ALLOC
+#define _CRTDBG_MAP_ALLOC_NEW
+#include <crtdbg.h>
+#include <assert.h>
+#include <stdlib.h>
 
 // On a besoin des structures et des fonctions pour gérer le taquin, on inclut donc la biblilothèque
 #include "Taquin.h"
@@ -61,6 +65,6 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 // fonction d'évaluation pour la résolution avec AStar
 int h(Taquin * pTaquin);
 
-void freeList(ptrListAStar p_list, int closed);
+void freeList(ptrListAStar p_list, Taquin* p_originel);
 
 #endif

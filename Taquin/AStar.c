@@ -1,6 +1,5 @@
 #include "AStar.h"
 #include <windows.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <conio.h>
 #include "SDL.h"
@@ -106,8 +105,8 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 	ptrListAStar openList = createNodeList(pTaquin, 0, h(pTaquin), AUCUN, NULL);
 	ptrListAStar closedList = NULL;
 	ptrListAStar current = NULL;
-	ptrListAStar* childrenNode = (ptrListAStar*)calloc(5, sizeof(ptrListAStar));
-	Taquin** childrenTaquin = (Taquin**)calloc(5, sizeof(Taquin*));
+	ptrListAStar childrenNode = NULL;
+	Taquin* childrenTaquin = NULL;
 	while (openList)
 	{
 		current = popList(&openList);
@@ -115,23 +114,25 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 		printf(" Nb Taquins generes : %d\n", (*pNbTaquinsGeneres));
 		for (int i = 1; i < 5; ++i)
 		{
-			childrenTaquin[i] = (Taquin*) calloc(1, sizeof(Taquin));
-			copyTaquin(current->m_taquin, childrenTaquin[i]);
+			childrenTaquin = (Taquin*) calloc(1, sizeof(Taquin));
+			copyTaquin(current->m_taquin, childrenTaquin);
 			(*pNbTaquinsGeneres)++;
-			if (!moveTaquin(childrenTaquin[i], i))
+
+			if (!moveTaquin(childrenTaquin, i))
 			{
-				free(childrenTaquin[i]);
+				freeTaquin(childrenTaquin);
+				free(childrenTaquin);
 				continue;
 			}
 
-			childrenNode[i] = createNodeList(childrenTaquin[i], current->m_parcouru + 1,
-				current->m_parcouru + 1 + h(childrenTaquin[i]), i, current);
+			childrenNode = createNodeList(childrenTaquin, current->m_parcouru + 1,
+				current->m_parcouru + 1 + h(childrenTaquin), i, current);
 
-			if (endTaquin(childrenTaquin[i]))
+			if (endTaquin(childrenTaquin))
 			{
 				//completed
 
-				ptrListAStar cursor = childrenNode[i];
+				ptrListAStar cursor = childrenNode;
 				while (cursor->m_lastStep)
 				{
 					(*pNbDeplacements)++;
@@ -139,40 +140,36 @@ int solveTaquin(Taquin *pTaquin, deplacement ** pTabDeplacement, unsigned long *
 				}
 
 				(*pTabDeplacement) = (deplacement*) calloc (*pNbDeplacements, sizeof(deplacement));
-				cursor = childrenNode[i];
+				cursor = childrenNode;
 				for (int i = (*pNbDeplacements) - 1; i > -1 ; --i)
 				{
 					(*pTabDeplacement)[i] = cursor->m_lastMove;
 					cursor = cursor->m_lastStep;
 				}
-				free(childrenTaquin);
-				freeList(childrenNode[i], 0);
-				free(childrenNode);
-				freeList(openList, 0);
-				freeList(closedList, 1);
+				freeList(childrenNode, pTaquin);
+				freeList(current, pTaquin);
+				freeList(openList, pTaquin);
+				freeList(closedList, pTaquin);
 				if (stepByStep)
 				{
 					return 1;
 				}
 				return 1;
 			}
-			if(isInList(&closedList, childrenTaquin[i]) || (isInList(&openList, childrenTaquin[i])))
+			if(isInList(&closedList, childrenTaquin) || (isInList(&openList, childrenTaquin)))
 			{
-				freeTaquin(childrenTaquin[i]);
-				free(childrenTaquin[i]);
-				free(childrenNode[i]);
+				freeList(childrenNode, pTaquin);
 				continue;
 			}
-			insertList(&openList, childrenNode[i], 1);
+			insertList(&openList, childrenNode, 1);
 		}
 		insertList(&closedList, current, 0);
 	}
 	printf("Couldn't find any solutions...\n");
-
-	free(childrenTaquin);
-	free(childrenNode);
-	freeList(openList, 0);
-	freeList(closedList, 1);
+	freeList(childrenNode, pTaquin);
+	freeList(current, pTaquin);
+	freeList(openList, pTaquin);
+	freeList(closedList, pTaquin);
 	return 0;
 }
 
@@ -190,35 +187,46 @@ int h(Taquin * pTaquin)
 			distance += abs((pTaquin->plateau[i][j] / largeur) - i) + abs((pTaquin->plateau[i][j] % largeur) - j);
 		}
 	}
-	return distance;
+	if (hauteur == 2)
+		return distance;
+
+	int bottom = hauteur - 1;
+	for (int i = 0; i < largeur; ++i)
+	{
+		if (pTaquin->plateau[bottom][i] != bottom / hauteur + i)
+			return distance;
+	}
+	distance -= 10;
+	if (hauteur == 3)
+		return distance;
+
+	bottom -= 1;
+
+	for (int i = 0; i < largeur; ++i)
+	{
+		if (pTaquin->plateau[bottom][i] != bottom / hauteur + i)
+			return distance;
+	}
+	return distance - 20;
 }
 
-void freeList(ptrListAStar p_list, int closed)
+void freeList(ptrListAStar p_list, Taquin* p_originel)
 {
 	if (!p_list)
 		return;
 
-	ptrListAStar cursor1, cursor2;
-	cursor1 = p_list;
-	cursor2 = p_list->m_nextlist;
-
-	while (cursor2)
+	ptrListAStar cursor = NULL;
+	while (cursor = popList(&p_list))
 	{
-		freeTaquin(cursor1->m_taquin);
-		free(cursor1->m_taquin);
-		cursor1->m_taquin = NULL;
-		free(cursor1);
-		cursor1 = cursor2;
-		cursor2 = cursor2->m_nextlist;
+		
+		if (cursor->m_taquin != p_originel)
+		{
+			freeTaquin(cursor->m_taquin);
+			free(cursor->m_taquin);
+			cursor->m_taquin = NULL;
+		}
+		free(cursor);
 	}
-
-	if (!closed)
-	{
-	freeTaquin(cursor1->m_taquin);
-		free(cursor1->m_taquin);
-		cursor1->m_taquin = NULL;
-	}
-	free(cursor1);
 	p_list = NULL;
 }
 

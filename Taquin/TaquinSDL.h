@@ -11,7 +11,11 @@
 #ifndef _TAQUIN_SDL_
 
 #define _TAQUIN_SDL_
-
+#define _CRTDBG_MAP_ALLOC
+#define _CRTDBG_MAP_ALLOC_NEW
+#include <crtdbg.h>
+#include <assert.h>
+#include <stdlib.h>
 #include "taquin.h"
 #include "SDL.h"
 

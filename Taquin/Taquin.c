@@ -254,7 +254,7 @@ int freeTaquin(Taquin * pTaquin)
 {
 	// TODO: freeTaquin
 	if (!pTaquin || !pTaquin->plateau)
-		return -1;
+		return 0;
 	int hauteur = pTaquin->hauteur;
 	for (int i = 0; i < hauteur; ++i)
 		free(pTaquin->plateau[i]);

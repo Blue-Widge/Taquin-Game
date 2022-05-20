@@ -10,12 +10,16 @@
 #ifndef _TAQUIN_
 
 #define _TAQUIN_
-
+#define _CRTDBG_MAP_ALLOC
+#define _CRTDBG_MAP_ALLOC_NEW
+#include <crtdbg.h>
+#include <assert.h>
+#include <stdlib.h>
 
 // Nombre de cases maximum en largeur ou hauteur
-#define SIZE_MAXI	3
+#define SIZE_MAXI	2
 // Nombre de cases minimum en largeur ou hauteur
-#define SIZE_MINI	3
+#define SIZE_MINI	2
 
 // Case vide, on définit la case vide comme étant la valeur 0, elle doit être en haut à gauche du taquin quand il est terminé
 #define VIDE 0
